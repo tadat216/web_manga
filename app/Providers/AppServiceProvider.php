@@ -5,7 +5,9 @@ namespace App\Providers;
 use App\Models\Genre;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
-
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -26,9 +28,14 @@ class AppServiceProvider extends ServiceProvider
             $view->with('genres', $genres);
         });
 
-        View::composer('partials.last_read_chapters', function ($view) {
-            $lastReadChapters = auth()->user()->lastReadChapters ?? []; // Lấy từ model hoặc logic của bạn
+        View::composer('user.chapters.partials._last_read_chapters', function ($view) {
+            $lastReadChapters = Auth::check() ? User::find(Auth::id())->getLastReadChapter() : collect([]);
             $view->with('lastReadChapters', $lastReadChapters);
+        });
+
+        View::composer('user.books.partials._suggested_books', function ($view) {
+            $suggestedBooks = Auth::check() ? User::find(Auth::id())->getSuggestedBooks() : collect([]);
+            $view->with('suggestedBooks', $suggestedBooks);
         });
     }
 }

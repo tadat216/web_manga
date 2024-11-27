@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
-
+use Illuminate\Support\Facades\Auth;
 /**
  * Class User
  * 
@@ -54,7 +54,27 @@ class User extends Authenticatable
 	public function books()
 	{
 		return $this->belongsToMany(Book::class)
-					->withPivot('id', 'chapter_id', 'is_saved', 'is_read')
+					->withPivot('id', 'chapter_id', 'is_saved', 'is_read', 'is_suggested')
 					->withTimestamps();
+	}
+
+	public function getLastReadChapter()
+	{
+		return $this->belongsToMany(Chapter::class, 'book_user', 'user_id', 'chapter_id')
+					->where('is_read', true)
+					->whereNotNull('book_user.chapter_id')
+					->with('book')
+					->orderBy('book_user.updated_at', 'desc')
+					->get();
+	}
+
+	public function getSuggestedBooks()
+	{
+		return $this->books()
+				->where('is_suggested', true)
+				->with(['genres', 'chapters'])
+				->inRandomOrder()
+				->limit(15)
+				->get();
 	}
 }

@@ -5,7 +5,7 @@
   <h2 class="text-xl mb-6 text-center">{{ $chapter->title }}</h2>
 
   <!-- Điều hướng chương đầu -->
-  @include('user.chapters.partials.navigation', [
+  @include('user.chapters.partials._navigation', [
       'book' => $book,
       'chapter' => $chapter,
       'chapters' => $chapters,
@@ -19,7 +19,7 @@
       {!! $chapter->content !!}
   </div>
 
-  @include('user.chapters.partials.navigation', [
+  @include('user.chapters.partials._navigation', [
     'book' => $book,
     'chapter' => $chapter,
     'chapters' => $chapters,

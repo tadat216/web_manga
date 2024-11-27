@@ -1,21 +1,22 @@
-@if($lastReadChapters->count() > 0)
-    <div class="last-read-chapters">
-        <h4>Chương đã đọc gần đây</h4>
-        <div class="list-group">
-            @foreach($lastReadChapters as $chapter)
-                <a href="{{ route('user.chapters.show', ['id' => $chapter->book_id, 'chapter_id' => $chapter->id]) }}" 
-                   class="list-group-item list-group-item-action">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1">{{ $chapter->book->title }}</h6>
-                            <small>{{ $chapter->title }}</small>
-                        </div>
-                        <small class="text-muted">
-                            {{ $chapter->updated_at->diffForHumans() }}
-                        </small>
-                    </div>
-                </a>
-            @endforeach
-        </div>
+@if ($lastReadChapters->count() > 0)
+  <div class="mt-4">
+    <div class="bg-white rounded-lg shadow p-4">
+      <h4 class="text-base font-semibold mb-4">Đã đọc gần đây</h4>
+      <div class="space-y-3 h-64 overflow-y-auto">
+        @foreach ($lastReadChapters as $chapter)
+          <a href="{{ route('user.chapters.show', ['id' => $chapter->book_id, 'chapter_id' => $chapter->id]) }}"
+            class="block hover:bg-gray-50 rounded p-3 transition duration-150">
+            <div class="flex justify-between items-center">
+              <div class="flex-1 min-w-0">
+                <div class="flex flex-col">
+                  <span class="font-medium text-sm mb-1 truncate">{{ $chapter->book->title }}...</span>
+                  <span class="text-gray-500 text-sm">{{ $chapter->title }}</span>
+                </div>
+              </div>
+            </div>
+          </a>
+        @endforeach
+      </div>
     </div>
-@endif 
+  </div>
+@endif

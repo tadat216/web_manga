@@ -15,5 +15,6 @@
 @endsection
 
 @section('sidebar')
-  <!-- Để trống cho các partial khác -->
+  @include('user.chapters.partials._last_read_chapters')
+  @include('user.books.partials._suggested_books')
 @endsection

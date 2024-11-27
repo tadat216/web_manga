@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int|null $chapter_id
  * @property bool $is_saved
  * @property bool $is_read
+ * @property bool $is_suggested
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * 
@@ -36,7 +37,8 @@ class BookUser extends Model
 		'user_id' => 'int',
 		'chapter_id' => 'int',
 		'is_saved' => 'bool',
-		'is_read' => 'bool'
+		'is_read' => 'bool',
+		'is_suggested' => 'bool'
 	];
 
 	protected $fillable = [
@@ -44,7 +46,8 @@ class BookUser extends Model
 		'user_id',
 		'chapter_id',
 		'is_saved',
-		'is_read'
+		'is_read',
+		'is_suggested'
 	];
 
 	public function book()
