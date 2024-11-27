@@ -35,27 +35,27 @@
             </div>
 
             <div class="mb-4">
-                <label for="cover_image" class="block text-sm font-medium text-gray-700">Ảnh bìa</label>
-                <input type="file" name="cover_image" id="cover_image" class="mt-1 block w-full">
-                @error('cover_image')
+                <label for="cover" class="block text-sm font-medium text-gray-700">Ảnh bìa</label>
+                <input type="file" name="cover" id="cover" class="mt-1 block w-full" accept="image/*">
+                @error('cover')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
 
             <div class="mb-4">
-                <label for="avatar_image" class="block text-sm font-medium text-gray-700">Ảnh đại diện</label>
-                <input type="file" name="avatar_image" id="avatar_image" class="mt-1 block w-full">
-                @error('avatar_image')
+                <label for="avatar" class="block text-sm font-medium text-gray-700">Ảnh đại diện</label>
+                <input type="file" name="avatar" id="avatar" class="mt-1 block w-full" accept="image/*">
+                @error('avatar')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
 
             <div class="mb-4">
-                <label for="status" class="block text-sm font-medium text-gray-700">Trạng thái <span class="text-red-500">*</span></label>
+                <label for="status" class="block text-sm font-medium text-gray-700">Trạng thái phát hành <span class="text-red-500">*</span></label>
                 <select name="status" id="status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
-                    <option value="incoming" {{ old('status') == 'incoming' ? 'selected' : '' }}>Sắp ra mắt</option>
-                    <option value="ongoing" {{ old('status') == 'ongoing' ? 'selected' : '' }}>Đang tiến hành</option>
-                    <option value="complete" {{ old('status') == 'complete' ? 'selected' : '' }}>Hoàn thành</option>
+                    @foreach(App\Models\Book::getStatuses() as $value => $label)
+                        <option value="{{ $value }}" {{ old('status') == $value ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
                 </select>
                 @error('status')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -86,6 +86,45 @@
                 </div>
             </div>
 
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">
+                    Thể loại
+                </label>
+                
+                <!-- Dropdown chọn thể loại -->
+                <select id="genre-select" class="w-full border rounded px-3 py-2 mb-2">
+                    <option value="">Chọn thể loại</option>
+                    @foreach($genres as $genre)
+                        <option value="{{ $genre->id }}" data-name="{{ $genre->title }}">
+                            {{ $genre->title }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <!-- Container chứa các tags đã chọn -->
+                <div id="selected-genres" class="flex flex-wrap gap-2">
+                    <!-- Tags sẽ được thêm vào đây bằng JS -->
+                </div>
+
+                <!-- Input ẩn để lưu các genre IDs -->
+                <input type="hidden" name="genres" id="genre-ids">
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">
+                    Danh sách Chapter
+                </label>
+                <div id="chapters-container">
+                    <!-- Chapters sẽ được thêm vào đây -->
+                </div>
+                <button type="button" id="add-chapter" class="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    Thêm Chapter
+                </button>
+            </div>
+
             <div class="flex justify-end space-x-3">
                 <a href="{{ route('admin.books') }}" class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Hủy
@@ -97,4 +136,176 @@
         </form>
     </div>
 </div>
+
+<!-- Thêm CKEditor -->
+<script src="https://cdn.ckeditor.com/ckeditor5/40.1.0/classic/ckeditor.js"></script>
+
+<!-- Thêm đoạn JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const genreSelect = document.getElementById('genre-select');
+    const selectedGenres = document.getElementById('selected-genres');
+    const genreIds = document.getElementById('genre-ids');
+    let selectedGenreIds = new Set();
+
+    genreSelect.addEventListener('change', function() {
+        const genreId = this.value;
+        const genreName = this.options[this.selectedIndex].dataset.name;
+        
+        if (genreId && !selectedGenreIds.has(genreId)) {
+            // Thêm genre mới
+            selectedGenreIds.add(genreId);
+            
+            // Tạo tag mới
+            const tag = document.createElement('div');
+            tag.className = 'flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-1 rounded-full';
+            tag.innerHTML = `
+                <span>${genreName}</span>
+                <button type="button" data-id="${genreId}" class="remove-genre text-blue-600 hover:text-blue-800">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            `;
+            
+            selectedGenres.appendChild(tag);
+            updateGenreIds();
+        }
+        
+        // Reset select về giá trị mặc định
+        this.value = '';
+    });
+
+    // Xử lý xóa tag
+    selectedGenres.addEventListener('click', function(e) {
+        if (e.target.closest('.remove-genre')) {
+            const button = e.target.closest('.remove-genre');
+            const genreId = button.dataset.id;
+            selectedGenreIds.delete(genreId);
+            button.closest('div').remove();
+            updateGenreIds();
+        }
+    });
+
+    // Cập nhật input ẩn chứa genre IDs
+    function updateGenreIds() {
+        genreIds.value = Array.from(selectedGenreIds).join(',');
+    }
+
+    // Xử lý thêm chapter
+    let chapterCount = 0;
+    const chaptersContainer = document.getElementById('chapters-container');
+    const addChapterButton = document.getElementById('add-chapter');
+
+    addChapterButton.addEventListener('click', function() {
+        chapterCount++;
+        const chapterDiv = document.createElement('div');
+        chapterDiv.className = 'chapter-item mb-4 border rounded p-4';
+        chapterDiv.dataset.number = chapterCount;
+        chapterDiv.innerHTML = `
+            <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center">
+                    <button type="button" class="move-up mr-2 text-gray-500 hover:text-gray-700" ${chapterCount === 1 ? 'disabled' : ''}>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <span class="font-bold">Chapter ${chapterCount}</span>
+                </div>
+                <div class="flex items-center">
+                    <button type="button" class="toggle-chapter mr-2 text-blue-600 hover:text-blue-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <button type="button" class="remove-chapter text-red-600 hover:text-red-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="chapter-content">
+                <input type="hidden" name="chapters[${chapterCount}][chapter_number]" value="${chapterCount}">
+                <div class="mb-2">
+                    <label class="block text-sm font-medium text-gray-700">Tiêu đề</label>
+                    <input type="text" name="chapters[${chapterCount}][title]" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                </div>
+                <div class="mb-2">
+                    <label class="block text-sm font-medium text-gray-700">Mô tả</label>
+                    <textarea name="chapters[${chapterCount}][description]" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Nội dung</label>
+                    <textarea name="chapters[${chapterCount}][content]" id="editor-${chapterCount}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" rows="10"></textarea>
+                </div>
+            </div>
+        `;
+        chaptersContainer.appendChild(chapterDiv);
+
+        // Khởi tạo CKEditor cho textarea content mới
+        ClassicEditor
+            .create(document.querySelector(`#editor-${chapterCount}`), {
+                toolbar: ['sourceEditing', '|', 'heading', '|', 'bold', 'italic', '|', 'link', 'bulletedList', 'numberedList', '|', 'undo', 'redo']
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    });
+
+    // Xử lý thu gọn/mở rộng chapter
+    chaptersContainer.addEventListener('click', function(e) {
+        if (e.target.closest('.toggle-chapter')) {
+            const chapterItem = e.target.closest('.chapter-item');
+            const content = chapterItem.querySelector('.chapter-content');
+            content.style.display = content.style.display === 'none' ? 'block' : 'none';
+        }
+    });
+
+    // Xử lý xóa chapter
+    chaptersContainer.addEventListener('click', function(e) {
+        if (e.target.closest('.remove-chapter')) {
+            if (confirm('Bạn có chắc chắn muốn xóa chapter này? Hành động này không thể hoàn tác.')) {
+                const chapterItem = e.target.closest('.chapter-item');
+                chapterItem.remove();
+                updateChapterNumbers();
+            }
+        }
+    });
+
+    // Xử lý di chuyển chapter lên
+    chaptersContainer.addEventListener('click', function(e) {
+        if (e.target.closest('.move-up')) {
+            const currentChapter = e.target.closest('.chapter-item');
+            const previousChapter = currentChapter.previousElementSibling;
+            
+            if (previousChapter) {
+                chaptersContainer.insertBefore(currentChapter, previousChapter);
+                updateChapterNumbers();
+            }
+        }
+    });
+
+    // Cập nhật số thứ tự chapter
+    function updateChapterNumbers() {
+        const chapters = chaptersContainer.querySelectorAll('.chapter-item');
+        chapters.forEach((chapter, index) => {
+            const newNumber = index + 1;
+            chapter.dataset.number = newNumber;
+            chapter.querySelector('.font-bold').textContent = `Chapter ${newNumber}`;
+            chapter.querySelector('input[name*="[chapter_number]"]').value = newNumber;
+            
+            // Cập nhật tất cả các name attribute
+            const inputs = chapter.querySelectorAll('[name^="chapters["]');
+            inputs.forEach(input => {
+                input.name = input.name.replace(/chapters\[\d+\]/, `chapters[${newNumber}]`);
+            });
+
+            // Disable/enable nút move-up
+            const moveUpButton = chapter.querySelector('.move-up');
+            moveUpButton.disabled = newNumber === 1;
+        });
+    }
+});
+</script>
 @endsection

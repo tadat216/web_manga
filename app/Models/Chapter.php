@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $book_id
  * @property string $title
  * @property string|null $description
+ * @property string|null $content
  * @property int $chapter_number
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -38,8 +39,9 @@ class Chapter extends Model
 
 	protected $fillable = [
 		'book_id',
-		'title',
+		'title', 
 		'description',
+		'content',
 		'chapter_number'
 	];
 

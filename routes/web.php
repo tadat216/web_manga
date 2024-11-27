@@ -2,9 +2,10 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CategoryController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('user.home.index');
 });
 
 Route::get('/dashboard', function () {
@@ -16,6 +17,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('/the-loai', [CategoryController::class, 'index'])->name('categories.index');
+//Route::get('/the-loai/{slug}', [CategoryController::class, 'show'])->name('categories.show');
 
 require __DIR__.'/auth.php';
 require __DIR__.'/route_user.php';

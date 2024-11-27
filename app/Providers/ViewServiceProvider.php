@@ -6,20 +6,14 @@ use App\Models\Genre;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 
-class AppServiceProvider extends ServiceProvider
+class ViewServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
+    public function register()
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
-    public function boot(): void
+    public function boot()
     {
         View::composer('layouts.app', function ($view) {
             $genres = Genre::all();

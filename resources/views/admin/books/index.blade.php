@@ -76,10 +76,10 @@
                             <a href="{{ route('admin.books.edit', $book->id) }}" class="text-indigo-600 hover:text-indigo-900">
                                 Sửa
                             </a>
-                            <form action="{{ route('admin.books.destroy', $book->id) }}" method="POST" class="inline">
+                            <form action="{{ route('admin.books.destroy', $book->id) }}" method="POST" class="inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa truyện này? Hành động này không thể hoàn tác.');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Bạn có chắc chắn muốn xóa?')">
+                                <button type="submit" class="text-red-600 hover:text-red-900">
                                     Xóa
                                 </button>
                             </form>

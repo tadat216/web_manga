@@ -92,5 +92,6 @@
             sidebar.classList.toggle('-translate-x-full');
         });
     </script>
+    @yield('scripts')
 </body>
 </html>
