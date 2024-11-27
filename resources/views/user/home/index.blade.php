@@ -14,5 +14,5 @@
 @endsection
 
 @section('sidebar')
-    @include('user.partials._last_read_chapters')
+    @include('user.chapters.partials._last_read_chapters')
 @endsection
