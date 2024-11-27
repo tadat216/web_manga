@@ -142,9 +142,9 @@ def recommend_books(user_id, user_book_matrix, similarity_matrix, data, num_reco
     recommended_books = data[data['book_id'].isin(recommendations.index)][['book_id', 'book_title']]
     recommended_books = recommended_books.drop_duplicates()
 
-    # Chọn 30 sách ngẫu nhiên từ danh sách đề xuất
+    #chọn 30 cuốn sách đầu tiên từ danh sách đề xuất có tiềm năng nhất
     if len(recommended_books) > num_recommendations:
-        recommended_books = recommended_books.sample(n=num_recommendations, random_state=42)
+        recommended_books = recommended_books.head(num_recommendations)
 
     return recommended_books
 

@@ -12,3 +12,7 @@
     </div>
 </div>
 @endsection
+
+@section('sidebar')
+    @include('user.partials._last_read_chapters')
+@endsection

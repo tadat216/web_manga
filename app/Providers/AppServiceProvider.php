@@ -25,5 +25,10 @@ class AppServiceProvider extends ServiceProvider
             $genres = Genre::all();
             $view->with('genres', $genres);
         });
+
+        View::composer('partials.last_read_chapters', function ($view) {
+            $lastReadChapters = auth()->user()->lastReadChapters ?? []; // Lấy từ model hoặc logic của bạn
+            $view->with('lastReadChapters', $lastReadChapters);
+        });
     }
 }
