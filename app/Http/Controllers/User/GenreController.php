@@ -14,10 +14,10 @@ class GenreController extends Controller
         return view('genres.index', compact('genres'));
     }
 
-    public function show($slug) 
+    public function show($id) 
     {
-        $genre = Genre::where('slug', $slug)->firstOrFail();
-        $stories = $genre->stories()->paginate(12);
-        return view('genres.show', compact('genre', 'stories'));
+        $genre = Genre::findOrFail($id);
+        $books = $genre->books()->where('is_active', 1)->with('chapters')->withCount('chapters')->paginate(12);
+        return view('user.genres.show', compact('genre', 'books'));
     }
 }

@@ -5,7 +5,7 @@ use App\Http\Controllers\Admin\GenreController;
 use App\Http\Controllers\Admin\BookController;
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', function () {
+    Route::get('/home', function () {
         return view('admin.home');
     })->name('home');
     // Quản lý sách

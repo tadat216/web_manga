@@ -18,7 +18,7 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::check()) {
+        if (Auth::check()) {
             $user = User::find(Auth::id());
             if(!$user->hasRole('admin')){
                 abort(403, 'Bạn không có quyền truy cập trang này.');

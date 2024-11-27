@@ -33,6 +33,10 @@
                     <span>Trang chủ</span>
                 </a>
 
+                <a href="{{ route('user.home') }}" class="group flex items-center px-2 py-2 text-base leading-6 font-medium rounded-md text-white hover:bg-gray-700 transition ease-in-out duration-150">
+                    <span>Trang người dùng</span>
+                </a>
+
                 {{-- Link quản lý truyện --}}
                 <a href="{{ route('admin.books') }}" class="mt-1 group flex items-center px-2 py-2 text-base leading-6 font-medium rounded-md text-white hover:bg-gray-700 transition ease-in-out duration-150">
                     <span>Quản lý truyện</span>
