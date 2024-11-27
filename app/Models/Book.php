@@ -89,9 +89,11 @@ class Book extends Model implements HasMedia
 
     public function users()
     {
-        return $this->belongsToMany(User::class)
+        return $this->belongsToMany(User::class, 'book_user')
                     ->withPivot('id', 'chapter_id', 'is_saved', 'is_read')
-                    ->withTimestamps();
+                    ->withTimestamps()
+                    ->leftJoin('chapters', 'chapters.id', '=', 'book_user.chapter_id')
+                    ->select('users.*', 'chapters.title as chapter_title', 'chapters.id as chapter_id');
     }
 
     public function chapters()
@@ -107,5 +109,13 @@ class Book extends Model implements HasMedia
     public function getStatusLabelAttribute()
     {
         return self::getStatuses()[$this->status] ?? $this->status;
+    }
+
+    public function lastReadChapters()
+    {
+        return $this->belongsToMany(User::class)
+            ->withPivot('chapter_id')
+            ->join('chapters', 'chapters.id', '=', 'book_user.chapter_id')
+            ->select('users.*', 'chapters.title', 'chapters.chapter_number', 'chapters.id as chapter_id');
     }
 }

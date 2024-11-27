@@ -40,9 +40,10 @@ class ChapterController extends Controller
             BookUser::updateOrCreate(
                 [
                     'user_id' => Auth::id(),
-                    'book_id' => $book->id
+                    'book_id' => $book->id,
+                    
                 ],
-                ['chapter_id' => $chapter_id]
+                ['chapter_id' => $chapter_id, 'is_read' => true]
             );
         }
 
