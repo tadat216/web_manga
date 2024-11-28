@@ -119,7 +119,7 @@ def build_user_book_matrix(data):
 
 
 # Đề xuất sách dựa trên User-Based Collaborative Filtering
-def recommend_books(user_id, user_book_matrix, similarity_matrix, data, num_recommendations=30):
+def recommend_books(user_id, user_book_matrix, similarity_matrix, data, num_recommendations=10):
     # Tìm chỉ số của người dùng
     user_idx = user_book_matrix.index.get_loc(user_id)
 

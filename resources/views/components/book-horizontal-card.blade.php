@@ -1,11 +1,11 @@
 <a href="{{ route('user.books.show', $book->id) }}" class="block">
-    <div class="flex bg-white rounded-lg shadow-md overflow-hidden relative hover:shadow-lg transition duration-300">
+    <div class="flex md:flex-row flex-col bg-white rounded-lg shadow-md overflow-hidden relative hover:shadow-lg transition duration-300">
         <div class="absolute top-2 right-2">
             <span class="bg-gray-100 text-gray-600 text-sm px-2 py-1 rounded">
                 {{ $book->chapters()->count() }} chương
             </span>
         </div>
-        <div class="w-24 h-32 flex-shrink-0">
+        <div class="md:w-24 w-full md:h-32 h-48 flex-shrink-0">
             <img 
                 src="{{ $book->avatar ?? asset('user/static/img/default-avatar.png') }}" 
                 alt="{{ $book->title }}"
@@ -15,7 +15,7 @@
         
         <div class="flex-1 p-4 flex flex-col justify-between">
             <div>
-                <h2 class="text-lg font-semibold flex items-center gap-2">
+                <h2 class="text-lg font-semibold flex items-center gap-2 flex-wrap">
                     {{ $book->title }}
                     <span class="text-sm font-normal px-2 py-1 rounded-full {{ $book->status === 'complete' ? 'bg-green-100 text-green-800' : ($book->status === 'ongoing' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800') }}">
                         {{ \App\Models\Book::getStatuses()[$book->status] }}
