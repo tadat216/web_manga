@@ -2,16 +2,20 @@ import numpy as np
 import pandas as pd
 import mysql.connector
 from sklearn.metrics.pairwise import cosine_similarity
-
+import os
+from dotenv import load_dotenv
 
 # Kết nối database
 def get_db_connection():
+
+    load_dotenv('./.env')
+    
     db_config = {
-        "host": "112.213.87.61",
-        "port": 3306,
-        "user": "web_user",
-        "password": "t@huynhd4t",
-        "database": "web_doc_truyen"
+        "host": os.getenv('DB_HOST'),
+        "port": int(os.getenv('DB_PORT')),
+        "user": os.getenv('DB_USERNAME'), 
+        "password": os.getenv('DB_PASSWORD'),
+        "database": os.getenv('DB_DATABASE')
     }
     try:
         connection = mysql.connector.connect(**db_config)
@@ -51,7 +55,7 @@ def delete_redundant_records():
     try:
         cursor = connection.cursor()
         query = """
-            DELETE FROM book_user
+            DELETE FROM book_user 
             WHERE is_read = 0 AND is_saved = 0 AND is_suggested = 1
         """
         cursor.execute(query)
@@ -72,12 +76,19 @@ def load_data():
         return None
 
     try:
+        # Lấy tất cả sách và người dùng
         query = """
-            SELECT bu.user_id, u.name AS user_name, bu.book_id, b.title AS book_title, 
-                   bu.is_read, bu.is_saved, bu.is_suggested
-            FROM book_user bu
-            JOIN users u ON bu.user_id = u.id
-            JOIN books b ON bu.book_id = b.id
+            SELECT 
+                u.id AS user_id,
+                u.name AS user_name,
+                b.id AS book_id,
+                b.title AS book_title,
+                COALESCE(bu.is_read, 0) as is_read,
+                COALESCE(bu.is_saved, 0) as is_saved,
+                COALESCE(bu.is_suggested, 0) as is_suggested
+            FROM users u
+            CROSS JOIN books b
+            LEFT JOIN book_user bu ON u.id = bu.user_id AND b.id = bu.book_id
         """
         df = pd.read_sql(query, connection)
         return df
@@ -89,62 +100,59 @@ def load_data():
             connection.close()
 
 
-# Lấy danh sách tất cả người dùng
-def get_all_users():
-    connection = get_db_connection()
-    if not connection:
-        return []
-
-    try:
-        cursor = connection.cursor()
-        query = "SELECT id FROM users"
-        cursor.execute(query)
-        users = [row[0] for row in cursor.fetchall()]
-        return users
-    except mysql.connector.Error as e:
-        print(f"Lỗi khi lấy danh sách người dùng: {e}")
-        return []
-    finally:
-        if connection.is_connected():
-            cursor.close()
-            connection.close()
-
-
 # Xây dựng ma trận người dùng - sách
 def build_user_book_matrix(data):
-    # Tạo ma trận, giá trị là 1 nếu user đã đọc/lưu sách, ngược lại là 0
-    data['interaction'] = data['is_read'] | data['is_saved']
-    user_book_matrix = data.pivot_table(index='user_id', columns='book_id', values='interaction', fill_value=0)
+    # Tạo ma trận tương tác, giá trị là 1 nếu user đã đọc hoặc đã lưu sách
+    data['interaction'] = (data['is_read'].astype(bool) | data['is_saved'].astype(bool)).astype(int)
+    
+    # Pivot table để tạo ma trận user-book
+    user_book_matrix = data.pivot_table(
+        index='user_id',
+        columns='book_id',
+        values='interaction',
+        fill_value=0,
+        aggfunc='max'  # Sử dụng max để đảm bảo 1 nếu có bất kỳ tương tác nào
+    )
+    
+    # Ghi ma trận vào file log
+    with open('python_scripts/user_book_matrix.log', 'w', encoding='utf-8') as f:
+        f.write("Ma trận tương tác người dùng - sách:\n")
+        f.write(user_book_matrix.to_string())
+        f.write("\n\nKích thước ma trận: " + str(user_book_matrix.shape))
+    
     return user_book_matrix
 
 
-# Đề xuất sách dựa trên User-Based Collaborative Filtering
-def recommend_books(user_id, user_book_matrix, similarity_matrix, data, num_recommendations=10):
-    # Tìm chỉ số của người dùng
-    user_idx = user_book_matrix.index.get_loc(user_id)
+# Tính toán ma trận tương đồng giữa các sách (Item-Based CF)
+def calculate_item_similarity(user_book_matrix):
+    # Tính toán ma trận tương đồng giữa các sách
+    item_similarity = cosine_similarity(user_book_matrix.T)  # Chuyển vị để tính giữa sách
+    item_similarity_df = pd.DataFrame(
+        item_similarity, index=user_book_matrix.columns, columns=user_book_matrix.columns
+    )
+    return item_similarity_df
 
-    # Lấy danh sách người dùng tương tự (trừ chính người dùng đó)
-    similarity_scores = pd.Series(similarity_matrix[user_idx], index=user_book_matrix.index)
-    similarity_scores = similarity_scores.sort_values(ascending=False)
 
-    # Lấy danh sách sách đã đọc bởi những người dùng tương tự
-    similar_users = similarity_scores.index[1:]  # Bỏ chính người dùng
-    similar_books = user_book_matrix.loc[similar_users].sum(axis=0)
-
-    # Loại bỏ sách mà người dùng hiện tại đã đọc hoặc lưu
+# Đề xuất sách dựa trên Item-Based Collaborative Filtering
+def recommend_books_item_based(user_id, user_book_matrix, item_similarity_df, data, num_recommendations=10):
+    # Lấy danh sách sách mà người dùng đã đọc
     user_books = user_book_matrix.loc[user_id]
-    books_to_recommend = similar_books[user_books == 0]
+    user_books_read = user_books[user_books > 0].index
 
-    # Sắp xếp theo mức độ phổ biến (giảm dần)
-    recommendations = books_to_recommend.sort_values(ascending=False)
+    # Tìm các sách tương tự
+    similar_books = pd.Series(dtype='float64')
+    for book_id in user_books_read:
+        similar_books = similar_books.add(item_similarity_df[book_id], fill_value=0)
+
+    # Loại bỏ sách mà người dùng đã đọc
+    similar_books = similar_books[user_books == 0]
+
+    # Sắp xếp và lấy top sách
+    recommendations = similar_books.sort_values(ascending=False).head(num_recommendations)
 
     # Lấy thông tin sách từ dataframe gốc
     recommended_books = data[data['book_id'].isin(recommendations.index)][['book_id', 'book_title']]
     recommended_books = recommended_books.drop_duplicates()
-
-    #chọn 30 cuốn sách đầu tiên từ danh sách đề xuất có tiềm năng nhất
-    if len(recommended_books) > num_recommendations:
-        recommended_books = recommended_books.head(num_recommendations)
 
     return recommended_books
 
@@ -191,15 +199,15 @@ def suggest_books_for_all_users():
     # Xây dựng ma trận người dùng - sách
     user_book_matrix = build_user_book_matrix(data)
 
-    # Tính toán ma trận tương đồng giữa người dùng
-    similarity_matrix = cosine_similarity(user_book_matrix)
+    # Tính toán ma trận tương đồng giữa các sách
+    item_similarity_df = calculate_item_similarity(user_book_matrix)
 
     # Lấy danh sách tất cả người dùng
     users = user_book_matrix.index.tolist()
 
     # Thực hiện gợi ý cho từng người dùng
     for user_id in users:
-        recommended_books = recommend_books(user_id, user_book_matrix, similarity_matrix, data)
+        recommended_books = recommend_books_item_based(user_id, user_book_matrix, item_similarity_df, data)
         if not recommended_books.empty:
             update_suggested_books(user_id, recommended_books)
 
