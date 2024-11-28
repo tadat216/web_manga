@@ -14,25 +14,25 @@
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased bg-gray-100 dark:bg-dark text-light dark:text-dark">
-  <nav class="bg-white shadow-lg relative z-50">
+<body class="font-sans antialiased bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+  <nav class="bg-white dark:bg-gray-800 shadow-lg relative z-50">
     <div class="max-w-6xl mx-auto px-4">
       <div class="flex justify-between">
         <div class="flex space-x-7">
           <!-- Logo -->
           <div>
             <a href="/" class="flex items-center py-4">
-              <span class="font-bold text-xl text-gray-700">TruyệnHay</span>
+              <span class="font-bold text-xl text-gray-700 dark:text-gray-200">TruyệnHay</span>
             </a>
           </div>
 
           <!-- Nav Links -->
           <div class="hidden md:flex items-center space-x-1">
-            <a href="/" class="py-4 px-2 text-gray-700 hover:text-blue-500 transition duration-300">Trang chủ</a>
+            <a href="/" class="py-4 px-2 text-gray-700 dark:text-gray-200 hover:text-blue-500 transition duration-300">Trang chủ</a>
 
             <!-- Dropdown Thể loại -->
             <div class="relative group">
-              <button class="py-4 px-2 text-gray-700 hover:text-blue-500 transition duration-300 flex items-center">
+              <button class="py-4 px-2 text-gray-700 dark:text-gray-200 hover:text-blue-500 transition duration-300 flex items-center">
                 Thể loại
                 <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -40,14 +40,14 @@
               </button>
 
               <!-- Dropdown menu -->
-              <div class="absolute hidden group-hover:block bg-white shadow-lg py-2 rounded-md z-50"
+              <div class="absolute hidden group-hover:block bg-white dark:bg-gray-800 shadow-lg py-2 rounded-md z-50"
                 style="width: 800px">
                 <div class="grid grid-cols-4 gap-2">
                   @foreach ($genres->chunk(8) as $genreChunk)
                     <div class="px-1">
                       @foreach ($genreChunk as $genre)
                         <a href="{{ route('user.genres.show', $genre->id) }}"
-                          class="block px-3 py-1 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">
+                          class="block px-3 py-1 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 whitespace-nowrap">
                           {{ $genre->title }}
                         </a>
                       @endforeach
@@ -61,7 +61,7 @@
 
         <!-- Auth Links -->
         <div class="hidden md:flex items-center space-x-3">
-          <button id="theme-toggle" class="p-2 rounded-lg hover:bg-gray-100">
+          <button id="theme-toggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
             <!-- Icon mặt trời -->
             <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="yellow" viewBox="0 0 20 20">
               <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"/>
@@ -74,25 +74,25 @@
           @auth
             <div class="relative group">
               <button
-                class="flex items-center space-x-1 py-4 px-2 text-gray-700 hover:text-blue-500 transition duration-300">
+                class="flex items-center space-x-1 py-4 px-2 text-gray-700 dark:text-gray-200 hover:text-blue-500 transition duration-300">
                 <span>{{ Auth::user()->name }}</span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-              <div class="absolute hidden group-hover:block right-0 bg-white shadow-lg py-2 rounded-md w-48">
+              <div class="absolute hidden group-hover:block right-0 bg-white dark:bg-gray-800 shadow-lg py-2 rounded-md w-48">
 
-                <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                   Trang cá nhân
                 </a>
                 @role('admin')
-                  <a href="{{ route('admin.home') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  <a href="{{ route('admin.home') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                     Trang quản trị
                   </a>
                 @endrole
                 <form method="POST" action="{{ route('logout') }}">
                   @csrf
-                  <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                     Đăng xuất
                   </button>
                 </form>
@@ -100,7 +100,7 @@
             </div>
           @else
             <a href="{{ route('login') }}"
-              class="py-2 px-4 text-gray-700 hover:text-blue-500 transition duration-300">Đăng nhập</a>
+              class="py-2 px-4 text-gray-700 dark:text-gray-200 hover:text-blue-500 transition duration-300">Đăng nhập</a>
             <a href="{{ route('register') }}"
               class="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300">Đăng ký</a>
           @endauth
@@ -109,7 +109,7 @@
         <!-- Mobile menu button -->
         <div class="md:hidden flex items-center">
           <button class="outline-none mobile-menu-button">
-            <svg class="w-6 h-6 text-gray-500 hover:text-blue-500" fill="none" stroke-linecap="round"
+            <svg class="w-6 h-6 text-gray-500 dark:text-gray-400 hover:text-blue-500" fill="none" stroke-linecap="round"
               stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
               <path d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
@@ -120,20 +120,20 @@
 
     <!-- Mobile menu -->
     <div class="hidden mobile-menu md:hidden">
-      <a href="/" class="block py-2 px-4 text-sm hover:bg-gray-100">Trang chủ</a>
+      <a href="/" class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Trang chủ</a>
       <div class="relative" x-data="{ open: false }">
         <button @click="open = !open"
-          class="block w-full text-left py-2 px-4 text-sm hover:bg-gray-100 flex justify-between items-center">
+          class="block w-full text-left py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex justify-between items-center">
           <span>Thể loại</span>
           <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor"
             viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </button>
-        <div class="bg-gray-50" x-show="open" style="display: none">
+        <div class="bg-gray-50 dark:bg-gray-700" x-show="open" style="display: none">
           @foreach ($genres as $genre)
             <a href="{{ route('user.genres.show', $genre->id) }}"
-              class="block py-2 px-6 text-sm text-gray-700 hover:bg-gray-100">
+              class="block py-2 px-6 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
               {{ $genre->title }}
             </a>
           @endforeach
@@ -141,26 +141,26 @@
       </div>
       @auth
 
-        <a href="{{ route('profile.edit') }}" class="block py-2 px-4 text-sm hover:bg-gray-100">Trang cá nhân</a>
+        <a href="{{ route('profile.edit') }}" class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Trang cá nhân</a>
         @role('admin')
-          <a href="{{ route('admin.home') }}" class="block py-2 px-4 text-sm hover:bg-gray-100">Trang quản trị</a>
+          <a href="{{ route('admin.home') }}" class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Trang quản trị</a>
         @endrole
         <form method="POST" action="{{ route('logout') }}">
           @csrf
-          <button type="submit" class="w-full text-left py-2 px-4 text-sm hover:bg-gray-100">
+          <button type="submit" class="w-full text-left py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
             Đăng xuất
           </button>
         </form>
       @else
-        <a href="{{ route('login') }}" class="block py-2 px-4 text-sm hover:bg-gray-100">Đăng nhập</a>
-        <a href="{{ route('register') }}" class="block py-2 px-4 text-sm hover:bg-gray-100">Đăng ký</a>
+        <a href="{{ route('login') }}" class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Đăng nhập</a>
+        <a href="{{ route('register') }}" class="block py-2 px-4 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">Đăng ký</a>
       @endauth
     </div>
   </nav>
 
   <!-- Page Heading -->
   @isset($header)
-    <header class="bg-white shadow">
+    <header class="bg-white dark:bg-gray-800 shadow">
       <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         {{ $header }}
       </div>
