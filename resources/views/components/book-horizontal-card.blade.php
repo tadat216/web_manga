@@ -1,11 +1,11 @@
 <a href="{{ route('user.books.show', $book->id) }}" class="block">
     <div class="flex md:flex-row flex-col bg-white rounded-lg shadow-md overflow-hidden relative hover:shadow-lg transition duration-300">
-        <div class="absolute top-2 right-2">
+        <div class="absolute top-2 right-2 z-10">
             <span class="bg-gray-100 text-gray-600 text-sm px-2 py-1 rounded">
                 {{ $book->chapters()->count() }} chương
             </span>
         </div>
-        <div class="md:w-24 w-full md:h-32 h-48 flex-shrink-0">
+        <div class="md:w-24 w-full h-32 flex-shrink-0">
             <img 
                 src="{{ $book->avatar ? $book->avatar : asset('user/static/img/default-avatar.png') }}" 
                 alt="{{ $book->title }}"
@@ -13,7 +13,7 @@
             >
         </div>
         
-        <div class="flex-1 p-4 flex flex-col justify-between">
+        <div class="flex-1 p-4 flex flex-col justify-between z-10">
             <div>
                 <h2 class="text-lg font-semibold flex items-center gap-2 flex-wrap">
                     {{ $book->title }}
