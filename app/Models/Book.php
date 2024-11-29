@@ -111,11 +111,24 @@ class Book extends Model implements HasMedia
         return self::getStatuses()[$this->status] ?? $this->status;
     }
 
-    public function lastReadChapters()
+    public function getLastReadChapters()
     {
-        return $this->belongsToMany(User::class)
-            ->withPivot('chapter_id')
-            ->join('chapters', 'chapters.id', '=', 'book_user.chapter_id')
-            ->select('users.*', 'chapters.title', 'chapters.chapter_number', 'chapters.id as chapter_id');
+        return $this->chapters()
+                    ->join('book_user', 'chapters.id', '=', 'book_user.chapter_id')
+                    ->where('book_user.is_read', true)
+                    ->whereNotNull('book_user.chapter_id')
+                    ->with(['book', 'book.genres'])
+                    ->orderBy('book_user.updated_at', 'desc')
+                    ->get();
+    }
+
+    public function getSuggestedBooks()
+    {
+        return $this->users()
+                    ->where('book_user.is_suggested', true)
+                    ->with(['genres', 'chapters'])
+                    ->inRandomOrder()
+                    ->limit(15)
+                    ->get();
     }
 }

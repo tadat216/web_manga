@@ -2,7 +2,7 @@
   <div class="mt-4">
     <div class="bg-light dark:bg-dark rounded-lg shadow p-4">
       <h4 class="text-base font-semibold mb-4 text-light dark:text-dark">Đề xuất cho bạn</h4>
-      <div class="space-y-3 h-64 overflow-y-auto">
+      <div class="space-y-3 h-96 overflow-y-auto">
         @foreach ($suggestedBooks as $book)
           <a href="{{ route('user.books.show', $book->id) }}"
             class="block hover:bg-gray-50 dark:hover:bg-gray-800 rounded p-3 transition duration-150">

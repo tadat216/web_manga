@@ -1,5 +1,5 @@
 <a href="{{ route('user.books.show', $book->id) }}" class="block">
-    <div class="flex md:flex-row flex-col bg-light dark:bg-dark rounded-lg shadow-md overflow-hidden relative hover:shadow-lg transition duration-300">
+    <div class="flex md:flex-row flex-col {{ Auth::check() && $book->users->where('id', Auth::id())->where('is_read', true)->count() > 0 ? 'bg-gray-50 dark:bg-gray-900' : 'bg-light dark:bg-dark' }} rounded-lg shadow-md overflow-hidden relative hover:shadow-lg transition duration-300">
         <div class="absolute top-2 right-2 z-10">
             <span class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-sm px-2 py-1 rounded">
                 {{ $book->chapters()->count() }} chương
@@ -22,10 +22,18 @@
                     </span>
                     @if(Auth::check() && isset($book->users) && $book->users->count() > 0)
                     <p class="text-sm text-green-600 dark:text-green-400 flex items-center gap-1 mb-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        Đã xem đến: Chương {{ optional($book->lastReadChapters->first())->chapter_number ?? '?' }}
+                        @if($book->pivot->is_read)
+                            Đã đọc
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                        @endif
+                        @if($book->pivot->is_saved)
+                            Đã lưu
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                            </svg>
+                        @endif
                     </p>
                     @endif
                 </h2>

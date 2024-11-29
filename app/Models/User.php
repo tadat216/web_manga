@@ -57,13 +57,12 @@ class User extends Authenticatable
 					->withPivot('id', 'chapter_id', 'is_saved', 'is_read', 'is_suggested')
 					->withTimestamps();
 	}
-
-	public function getLastReadChapter()
+	public function getLastReadChapters()
 	{
 		return $this->belongsToMany(Chapter::class, 'book_user', 'user_id', 'chapter_id')
 					->where('is_read', true)
 					->whereNotNull('book_user.chapter_id')
-					->with('book')
+					->with(['book', 'book.genres', 'book.chapters'])
 					->orderBy('book_user.updated_at', 'desc')
 					->get();
 	}

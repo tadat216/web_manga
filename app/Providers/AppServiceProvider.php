@@ -29,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('user.chapters.partials._last_read_chapters', function ($view) {
-            $lastReadChapters = Auth::check() ? User::find(Auth::id())->getLastReadChapter() : collect([]);
+            $lastReadChapters = Auth::check() ? User::find(Auth::id())->getLastReadChapters() : collect([]);
             $view->with('lastReadChapters', $lastReadChapters);
         });
 
