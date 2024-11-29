@@ -13,6 +13,9 @@ class HomeController extends Controller
 {
     public function index()
     {
+        $savedBooks = collect();
+        $continueBooks = collect();
+        
         if(Auth::check()){
             $user = User::with([
                 'books' => function($query) {

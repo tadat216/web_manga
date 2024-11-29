@@ -29,8 +29,6 @@ Route::get('/truyen/{id}/chuong/{chapter_id}', [ChapterController::class, 'show'
 
 // route cho tìm kiếm
 Route::get('/the-loai/{id}/tim-kiem', [GenreController::class, 'search'])->name('user.genres.search');
-Route::get('/the-loai/{id}/tac-gia/{authorName}', [GenreController::class, 'searchByAuthor'])->name('user.genres.searchByAuthor');
-Route::get('/the-loai/{id}/trang-thai/{status}', [GenreController::class, 'searchByStatus'])->name('user.genres.searchByStatus');
 
 require __DIR__.'/auth.php';
 require __DIR__.'/route_user.php';
