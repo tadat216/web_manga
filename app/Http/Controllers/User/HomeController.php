@@ -13,7 +13,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $savedBoks = collect();
+        $savedBooks = collect();
         $continueBooks = collect();
         
         if(Auth::check()){
@@ -30,7 +30,7 @@ class HomeController extends Controller
                 }
             ])->find(Auth::id());
 
-            $savedBoks = $user->books->where('pivot.is_saved', 1);
+            $savedBooks = $user->books->where('pivot.is_saved', 1);
             $continueBooks = $user->books->where('pivot.is_read', 1);
         }
         return view('user.home.index', compact('savedBooks', 'continueBooks'));
