@@ -13,7 +13,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $savedBooks = collect();
+        $savedBoks = collect();
         $continueBooks = collect();
         
         if(Auth::check()){
