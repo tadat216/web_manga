@@ -30,7 +30,7 @@ class HomeController extends Controller
                 }
             ])->find(Auth::id());
 
-            $savedBooks = $user->books->where('pivot.is_saved', 1);
+            $savedBoks = $user->books->where('pivot.is_saved', 1);
             $continueBooks = $user->books->where('pivot.is_read', 1);
         }
         return view('user.home.index', compact('savedBooks', 'continueBooks'));
