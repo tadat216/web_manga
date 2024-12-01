@@ -130,6 +130,11 @@ def calculate_item_similarity(user_book_matrix):
     item_similarity_df = pd.DataFrame(
         item_similarity, index=user_book_matrix.columns, columns=user_book_matrix.columns
     )
+
+    with open('python_scripts/book_similarity_matrix.log', 'w', encoding='utf-8') as f:
+        f.write("Ma trận tính độ tương gự - sách:\n")
+        f.write(item_similarity_df.to_string())
+        f.write("\n\nKích thước ma trận: " + str(item_similarity_df.shape))
     return item_similarity_df
 
 
@@ -144,12 +149,21 @@ def recommend_books_item_based(user_id, user_book_matrix, item_similarity_df, da
     for book_id in user_books_read:
         similar_books = similar_books.add(item_similarity_df[book_id], fill_value=0)
 
+    with open('python_scripts/similar_books.log', 'a', encoding='utf-8') as f:
+        f.write(f'Người dùng {user_id}:\n')
+        f.write("Sách tương tự:\n")
+        f.write(similar_books.to_string() + '\n')
+
     # Loại bỏ sách mà người dùng đã đọc
     similar_books = similar_books[user_books == 0]
 
     # Sắp xếp và lấy top sách
     recommendations = similar_books.sort_values(ascending=False).head(num_recommendations)
-
+    
+    with open('python_scripts/similar_books.log', 'a', encoding='utf-8') as f:
+        f.write("Sách được đề xuất:\n")
+        f.write(similar_books.to_string() + '\n\n')
+    
     # Lấy thông tin sách từ dataframe gốc
     recommended_books = data[data['book_id'].isin(recommendations.index)][['book_id', 'book_title']]
     recommended_books = recommended_books.drop_duplicates()
